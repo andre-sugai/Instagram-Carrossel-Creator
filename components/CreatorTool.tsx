@@ -8,6 +8,7 @@ import { toBlob } from 'html-to-image';
 import { SlideContent, Vibe, AspectRatio, SavedCarousel, TextLayout, SlideStyle, ContainerScope } from '../types';
 import { VIBES, ASPECT_RATIOS, INITIAL_SLIDES_COUNT, FONT_OPTIONS, DEFAULT_STYLE, GOOGLE_FONTS_URL, GRADIENT_PRESETS } from '../constants';
 import { generateCarouselText, generateSlideImage, generateNextSlideText, regenerateSlideField } from '../services/geminiService';
+import { useCredits } from '../hooks/useCredits';
 import SlideCard from './SlideCard';
 import ImageUploadModal from './ImageUploadModal';
 import { SparklesIcon, InstagramIcon, LoaderIcon, CopyIcon, CheckIcon, PlusIcon, SaveIcon, HistoryIcon, TrashIcon, RefreshIcon, LayoutIcon, ChevronDownIcon, ChevronUpIcon, TypeIcon, UploadIcon, ImageIcon, FlagBR, FlagUS, UserIcon, ChevronLeftIcon, ChevronRightIcon, EditIcon, DownloadIcon } from './Icons';
@@ -17,6 +18,7 @@ type ViewMode = 'create' | 'saved';
 const CreatorTool: React.FC = () => {
   // Auth State
   const { user } = useAuth();
+  const { refresh: refreshCredits } = useCredits();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [hasApiKey, setHasApiKey] = useState(false);
 
@@ -262,6 +264,9 @@ const CreatorTool: React.FC = () => {
       setSlides(generatedSlides);
       setCaption(generatedCaption);
       
+      // Refresh credits after successful generation
+      refreshCredits();
+      
     } catch (err: any) {
       handleError(err);
       if (slides.length === 0) setSlides([]); 
@@ -304,6 +309,9 @@ const CreatorTool: React.FC = () => {
       // Add text slide only
       const updatedSlides = [...slides, newSlide];
       setSlides(updatedSlides);
+      
+      // Refresh credits after successful generation
+      refreshCredits();
 
     } catch (err) {
       console.error("Failed to add slide", err);
@@ -349,6 +357,9 @@ const CreatorTool: React.FC = () => {
       setSlides(prev => prev.map(s => 
         s.id === slideId ? { ...s, [field]: newText } : s
       ));
+      
+      // Refresh credits after successful regeneration
+      refreshCredits();
     } catch (e) {
       console.error(e);
       handleError(e);

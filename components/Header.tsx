@@ -11,6 +11,7 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { useCredits } from '../hooks/useCredits';
 import { TRANSLATIONS, Language } from '../constants/translations';
+import { AnimatedCreditCounter } from './AnimatedCreditCounter';
 
 interface HeaderProps {
   language: Language;
@@ -129,9 +130,10 @@ export default function Header({
           {user && (
             <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-400">
                <CreditCardIcon className="w-4 h-4" />
-               <span className="font-bold text-sm">
-                 {credits === null ? '...' : credits}
-               </span>
+               <AnimatedCreditCounter 
+                 value={credits} 
+                 className="font-bold text-sm" 
+               />
                <span className="text-xs opacity-70 hidden sm:inline">{t.credits}</span>
                <button className="ml-2 w-6 h-6 flex items-center justify-center bg-purple-500 text-white rounded-full text-xs hover:bg-purple-400 transition-colors">
                  +
