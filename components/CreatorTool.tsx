@@ -11,6 +11,7 @@ import { generateCarouselText, generateSlideImage, generateNextSlideText, regene
 import { useCredits } from '../hooks/useCredits';
 import SlideCard from './SlideCard';
 import ImageUploadModal from './ImageUploadModal';
+import PricingModal from './PricingModal';
 import { SparklesIcon, InstagramIcon, LoaderIcon, CopyIcon, CheckIcon, PlusIcon, SaveIcon, HistoryIcon, TrashIcon, RefreshIcon, LayoutIcon, ChevronDownIcon, ChevronUpIcon, TypeIcon, UploadIcon, ImageIcon, FlagBR, FlagUS, UserIcon, ChevronLeftIcon, ChevronRightIcon, EditIcon, DownloadIcon } from './Icons';
 
 type ViewMode = 'create' | 'saved';
@@ -70,6 +71,7 @@ const CreatorTool: React.FC = () => {
   // LocalStorage State
   const [savedCarousels, setSavedCarousels] = useState<SavedCarousel[]>([]);
   const [isSavedRecently, setIsSavedRecently] = useState(false);
+  const [showPricingModal, setShowPricingModal] = useState(false);
 
   // Translation Object
   // Translation Object
@@ -166,11 +168,16 @@ const CreatorTool: React.FC = () => {
   };
 
   const handleError = (err: any) => {
-    console.error(err);
-    const msg = err?.message || JSON.stringify(err);
-    if (msg.includes("Insufficient credits") || msg.includes("402")) {
-        setError("Créditos insuficientes! Por favor, recarregue sua conta.");
-    } else if (msg.includes("403") || msg.includes("PERMISSION_DENIED") || msg.includes("permission")) {
+    console.error("DEBUG CreatorTool HandleError:", err);
+    
+    // Check if it's a Supabase FunctionsHttpError (has a status property)
+    const status = err?.status || err?.context?.status || (err?.message?.includes('402') ? 402 : null);
+    const msg = String(err?.message || err || "");
+
+    if (status === 402 || msg.includes("Insufficient credits") || msg.includes("402")) {
+        setShowPricingModal(true);
+        setError("Créditos insuficientes! Escolha um plano para continuar criando.");
+    } else if (status === 403 || msg.includes("403") || msg.includes("PERMISSION_DENIED") || msg.includes("permission")) {
       setError("Erro de permissão no servidor. Tente novamente mais tarde.");
     } else {
       setError("Erro ao gerar conteúdo. Tente novamente.");
@@ -616,6 +623,7 @@ const CreatorTool: React.FC = () => {
         setViewMode={setViewMode}
         handleNewProjectClick={handleNewProjectClick}
         onLoginClick={() => setShowAuthModal(true)}
+        onAddCredits={() => setShowPricingModal(true)}
       />
 
       <main className="w-full pt-16 min-h-screen flex flex-col lg:h-screen lg:overflow-hidden">
@@ -1902,6 +1910,11 @@ const CreatorTool: React.FC = () => {
 
         </div>
       </main>
+      {/* Modal de Planos */}
+      <PricingModal 
+        isOpen={showPricingModal} 
+        onClose={() => setShowPricingModal(false)} 
+      />
     </div>
   );
 };

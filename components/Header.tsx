@@ -20,6 +20,7 @@ interface HeaderProps {
   setViewMode?: (mode: 'create' | 'saved') => void;
   handleNewProjectClick?: () => void;
   onLoginClick?: () => void;
+  onAddCredits?: () => void;
 }
 
 const FlagBR = () => (
@@ -50,7 +51,8 @@ export default function Header({
   viewMode, 
   setViewMode,
   handleNewProjectClick,
-  onLoginClick
+  onLoginClick,
+  onAddCredits
 }: HeaderProps) {
   const { user, signOut } = useAuth();
   const { credits } = useCredits();
@@ -135,8 +137,11 @@ export default function Header({
                  className="font-bold text-sm" 
                />
                <span className="text-xs opacity-70 hidden sm:inline">{t.credits}</span>
-               <button className="ml-2 w-6 h-6 flex items-center justify-center bg-purple-500 text-white rounded-full text-xs hover:bg-purple-400 transition-colors">
-                 +
+               <button 
+                 onClick={onAddCredits}
+                 className="ml-2 w-6 h-6 flex items-center justify-center bg-purple-500 text-white rounded-full text-xs hover:bg-purple-400 transition-colors shadow-lg shadow-purple-500/30 active:scale-95"
+               >
+                 <PlusIcon className="w-3 h-3" />
                </button>
             </div>
           )}

@@ -44,7 +44,7 @@ export const generateCarouselText = async (
 
   if (error) {
     console.error('Edge Function Error:', error);
-    throw new Error(error.message || 'Erro ao gerar carrossel');
+    throw error; // Preserve status code and full error object
   }
   if (data?.error) {
     console.error('Server Response Error:', data);
@@ -88,7 +88,7 @@ export const generateNextSlideText = async (
     }
   });
 
-  if (error) throw new Error(error.message);
+  if (error) throw error;
   if (data.error) throw new Error(data.error);
 
   return {
@@ -121,7 +121,7 @@ export const regenerateSlideField = async (
     }
   });
 
-  if (error) throw new Error(error.message);
+  if (error) throw error;
   if (data.error) throw new Error(data.error);
 
   return data.text;
@@ -147,7 +147,7 @@ export const generateSlideImage = async (
         }
     });
 
-    if (error) throw new Error(error.message);
+    if (error) throw error;
     if (data.error) throw new Error(data.error);
     
     return data.imageData; // Expecting base64 string
